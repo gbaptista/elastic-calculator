@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="./assets/vendor/bootstrap/css/bootstrap-4.3.1.min.css">
+    <link rel="stylesheet" href="./assets/stylesheets/home.css">
+
+    <title>Elasticsearch Cluster Simulation</title>
+  </head>
+  <body>
+    <a href="https://github.com/gbaptista/elastic-calculator"><img width="149" height="149" src="./assets/images/fork-me.png" class="fork-me" alt="Fork me on GitHub" data-recalc-dims="1"></a>
+
+    <div id="app">
+      <div class="container-fluid">
+        <br>
+        <div class="row">
+          <div class="col-sm-2">
+            <div class="form-group">
+              <label for="documents">Documents ({{ formattedDocuments }}):</label>
+              <input v-model="documents" type="number" class="form-control" id="documents">
+            </div>
+
+            <div class="form-group">
+              <label for="writeThroughput">Write throughput ({{formattedWriteThroughput}} rpm):</label>
+              <input v-model="writeThroughput" type="number" class="form-control" id="writeThroughput">
+            </div>
+
+            <div class="form-group">
+              <label for="readThroughput">Read throughput ({{ formattedReadThroughput }} rpm):</label>
+              <input v-model="readThroughput" type="number" class="form-control" id="readThroughput">
+            </div>
+
+            <div class="form-group">
+              <label for="clusters">Clusters:</label>
+              <input v-model="clusters" type="number" class="form-control" id="clusters">
+            </div>
+
+            <div class="form-group">
+              <label for="nodes">Nodes:</label>
+              <input v-model="nodes" type="number" class="form-control" id="nodes">
+            </div>
+
+            <div class="form-group">
+              <label for="shards">Shards:</label>
+              <input v-model="shards" type="number" class="form-control" id="shards">
+            </div>
+
+            <div class="form-group">
+              <label for="replicas">Replicas:</label>
+              <input v-model="replicas" type="number" class="form-control" id="replicas">
+            </div>
+          </div>
+          <!-- ========================================================== -->
+          <div class="col-sm-10 clusters">
+            <div class="row">
+              <cluster
+                v-for="clusterIndex in safeInt(clusters)"
+                :key="'cluster' + clusterIndex"
+                :name="'cluster ' + clusterIndex"
+                :clusters="safeInt(clusters)"
+                :nodes="safeInt(nodes)"
+                :documents="safeInt(documents)"
+                :shards="safeInt(shards)"
+                :read-throughput="safeInt(readThroughput)"
+                :write-throughput="safeInt(writeThroughput)"
+                :replicas="safeInt(replicas)">
+              </cluster>
+            </div>
+          </div>
+        </div>
+        <br>
+      </div>
+    </div>
+
+    <script src="./_bundled/javascripts/home.js"></script>
+  </body>
+</html>
