@@ -8,7 +8,7 @@ module.exports = env => {
       home: './assets/javascripts/pages/home.js'
     },
     output: {
-      path: path.resolve(__dirname, '_bundled/javascripts'),
+      path: path.resolve(__dirname, 'bundle/javascripts'),
       filename: "[name].js"
     },
     mode: env.ENV,
