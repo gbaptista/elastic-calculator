@@ -157,7 +157,7 @@ export default {
       return Math.ceil(this.shards * docsPerShard);
     },
     docsForThisNodeLabel() {
-      return numerify(this.docsForThisNode, '0a');
+      return numerify(this.docsForThisNode, '0.0a');
     },
   },
   methods: {

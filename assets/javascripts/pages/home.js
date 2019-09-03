@@ -10,22 +10,22 @@ const app = new Vue({
   data: {
     writeThroughput: 1000,
     readThroughput: 1500,
-    documents: 6000,
+    documents: 4000000,
     clusters: 1,
     deticatedNodes: 1,
     nodes: 3,
-    shards: 2,
+    shards: 3,
     replicas: 2,
   },
   computed: {
     formattedDocuments() {
-      return numerify(this.documents, '0a');
+      return numerify(this.documents, '0.0a');
     },
     formattedReadThroughput() {
-      return numerify(this.readThroughput, '0a');
+      return numerify(this.readThroughput, '0.0a');
     },
     formattedWriteThroughput() {
-      return numerify(this.writeThroughput, '0a');
+      return numerify(this.writeThroughput, '0.0a');
     },
   },
   methods: {
