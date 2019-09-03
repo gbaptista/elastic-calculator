@@ -1,13 +1,11 @@
 <template>
-  <div class="col-6">
-    <div class="card">
+  <div class="col-12 col-sm-12 col-md-12 col-lg-6">
+    <div class="card card-replica">
+      <div class="card-header">
+        {{ name }}
+      </div>
       <div class="card-body">
-        <h5 class="card-title">
-          {{ name }}
-        </h5>
-        <div class="card-text">
-          {{ readsForThisReplica }} rpm (read)
-        </div>
+        <span class="badge badge-pill badge-info">read: {{ readsForThisReplica }} rpm</span>
       </div>
     </div>
   </div>
@@ -27,7 +25,7 @@ export default {
   computed: {
     readsForThisReplica() {
       return numerify(
-        Math.ceil(this.readThroughput / (this.totalOfShards * this.replicas)), '0a',
+        Math.ceil(this.readThroughput / (this.totalOfShards * (this.replicas + 1))), '0a',
       );
     },
   },

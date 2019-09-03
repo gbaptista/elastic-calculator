@@ -1,14 +1,42 @@
 #app {
   z-index: 1;
 }
-.clusters .card {
-  margin: 6px 0;
+
+.clusters .card-shard, .clusters .card-node, .clusters .card-replica {
+  margin-bottom: 16px;
 }
 
+.card-cluster > .card-header {
+  text-align: center;
+}
 
-.clusters .card h5 {
-  font-size: 14px;
-  font-weight: bold;
+.card-body {
+  text-align: center;
+  padding: 1.0rem;
+}
+
+.card-body .alert-info {
+  text-align: left;
+}
+
+.clusters .card-shard .card-body, .clusters .card-replica .card-body {
+  padding: 1.0rem 0.75rem;
+}
+
+.clusters .card-cluster > .card-body, .clusters .card-node > .card-body {
+  padding-bottom: 0.25rem;
+}
+
+.clusters .card-node:hover {
+  border-color: #856404;
+}
+
+.clusters .card-node:hover .card-body {
+  background-color: #fff3cd;
+}
+
+.clusters .card-node .card .card-body {
+  background-color: #FFFFFF;
 }
 
 .fork-me {
@@ -16,4 +44,8 @@
   right: 0;
   top: 0;
   z-index: 2;
+}
+
+.card-form .card-body {
+  text-align: left;
 }

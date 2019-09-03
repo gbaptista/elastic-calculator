@@ -9,11 +9,12 @@ const app = new Vue({
   components: { Cluster },
   data: {
     writeThroughput: 1000,
-    readThroughput: 5000,
-    documents: 2000000,
+    readThroughput: 1500,
+    documents: 6000,
     clusters: 1,
-    nodes: 6,
-    shards: 6,
+    deticatedNodes: 1,
+    nodes: 3,
+    shards: 2,
     replicas: 2,
   },
   computed: {
