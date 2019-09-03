@@ -42,12 +42,13 @@
               :nodes="nodes"
               :master="false"
               :node-index="nodeIndex"
-              :shards-per-node="shardsPerNode"
               :total-of-shards="shards"
+              :total-of-replicas="replicas"
+              :gb-size="gbSize"
               :read-throughput="readThroughput"
               :write-throughput="writeThroughput"
-              :shards="shardsFor(nodeIndex)"
-              :replicas="replicas"
+              :shards-and-replicas="shardsAndReplicasFor(nodeIndex)"
+              :shards-and-replicas-per-node="shardsAndReplicasPerNode"
             />
             <node
               v-for="nodeIndex in deticatedNodes"
@@ -58,12 +59,14 @@
               :nodes="0"
               :master="true"
               :node-index="nodeIndex"
-              :shards-per-node="{}"
               :total-of-shards="0"
+              :total-of-replicas="0"
               :read-throughput="0"
+              :gb-size="gbSize"
               :write-throughput="0"
               :shards="0"
-              :replicas="0"
+              :shards-and-replicas="shardsAndReplicasFor((nodes - deticatedNodes) + nodeIndex)"
+              :shards-and-replicas-per-node="shardsAndReplicasPerNode"
             />
           </div>
         </div>
@@ -84,6 +87,7 @@ export default {
     nodes: { type: Number, required: true },
     documents: { type: Number, required: true },
     shards: { type: Number, required: true },
+    gbSize: { type: Number, required: true },
     replicas: { type: Number, required: true },
     readThroughput: { type: Number, required: true },
     writeThroughput: { type: Number, required: true },
@@ -97,6 +101,52 @@ export default {
       }
 
       return this.nodes >= expectedNodes;
+    },
+    replicasPerNode() {
+      const nodeReplicas = {};
+
+      for (let node = 1; node <= this.nodes; node += 1) {
+        nodeReplicas[node] = 0;
+      }
+
+      let pendingReplicas = this.shards * this.replicas;
+
+      while (pendingReplicas > 0) {
+        for (let node = 1; node <= (this.nodes - this.deticatedNodes); node += 1) {
+          nodeReplicas[node] += 1;
+          pendingReplicas -= 1;
+
+          if (pendingReplicas === 0) break;
+        }
+      }
+
+      return nodeReplicas;
+    },
+    shardsAndReplicasPerNode() {
+      const nodeShardsAndReplicas = {};
+
+      for (let node = 1; node <= (this.nodes - this.deticatedNodes); node += 1) {
+        nodeShardsAndReplicas[node] = [];
+      }
+
+      let pendingShards = this.shards;
+      let pendingReplicas = this.shards * this.replicas;
+
+      while (pendingShards > 0 || pendingReplicas > 0) {
+        for (let node = 1; node <= (this.nodes - this.deticatedNodes); node += 1) {
+          if (pendingShards > 0) {
+            nodeShardsAndReplicas[node].push({ kind: 'shard' });
+            pendingShards -= 1;
+          } else if (pendingReplicas > 0) {
+            nodeShardsAndReplicas[node].push({ kind: 'replica' });
+            pendingReplicas -= 1;
+          } else {
+            break;
+          }
+        }
+      }
+
+      return nodeShardsAndReplicas;
     },
     shardsPerNode() {
       const nodeShards = {};
@@ -122,6 +172,16 @@ export default {
   methods: {
     shardsFor(nodeIndex) {
       return this.shardsPerNode[nodeIndex];
+    },
+    shardsAndReplicasFor(nodeIndex) {
+      if (this.shardsAndReplicasPerNode[nodeIndex] === undefined) {
+        return [];
+      }
+
+      return this.shardsAndReplicasPerNode[nodeIndex];
+    },
+    replicasFor(nodeIndex) {
+      return this.replicasPerNode[nodeIndex];
     },
     safeInt(value) {
       const intValue = parseInt(value, 10);

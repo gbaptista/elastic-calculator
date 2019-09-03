@@ -6,6 +6,9 @@
       </div>
       <div class="card-body">
         <span class="badge badge-pill badge-info">read: {{ readsForThisReplica }} rpm</span>
+        <span class="badge badge-pill badge-light">~ {{ documentsInThisReplica }} docs</span>
+
+        <span class="badge badge-pill badge-light">{{ bytesInThisReplica }}</span>
       </div>
     </div>
   </div>
@@ -14,6 +17,10 @@
 <script>
 import numerify from 'numerify';
 
+import numerifyBytes from 'numerify/lib/plugins/bytes.umd';
+
+numerify.register('bytes', numerifyBytes);
+
 export default {
   props: {
     name: { type: String, required: true },
@@ -21,11 +28,23 @@ export default {
     replicas: { type: Number, required: true },
     readThroughput: { type: Number, required: true },
     totalOfShards: { type: Number, required: true },
+    gbSize: { type: Number, required: true },
+    totalOfReplicas: { type: Number, required: true },
   },
   computed: {
+    documentsInThisReplica() {
+      return numerify(Math.ceil(this.documents / this.totalOfShards), '0.0a');
+    },
+    bytesInThisReplica() {
+      const gbPerShard = this.gbSize / this.totalOfShards;
+
+      return numerify(gbPerShard * 1000 * 1000000, '0.0b');
+    },
     readsForThisReplica() {
       return numerify(
-        Math.ceil(this.readThroughput / (this.totalOfShards * (this.replicas + 1))), '0a',
+        Math.ceil(
+          this.readThroughput / ((this.totalOfShards * this.totalOfReplicas) + this.totalOfShards),
+        ), '0.0a',
       );
     },
   },

@@ -7,7 +7,7 @@
 
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="./assets/vendor/bootstrap/css/bootstrap-4.3.1.min.css">
-    <link rel="stylesheet" href="./assets/stylesheets/home.css?v=4">
+    <link rel="stylesheet" href="./assets/stylesheets/home.css?v=5">
 
     <title>Elasticsearch Calculator</title>
   </head>
@@ -24,26 +24,6 @@
                 Info:
               </div>
               <div class="card-body">
-                <div class="form-group">
-                  <label for="documents">Documents ({{ formattedDocuments }}):</label>
-                  <input v-model="documents" type="number" class="form-control" id="documents">
-                </div>
-
-                <div class="form-group">
-                  <label for="writeThroughput">Write ({{formattedWriteThroughput}} rpm):</label>
-                  <input v-model="writeThroughput" type="number" class="form-control" id="writeThroughput">
-                </div>
-
-                <div class="form-group">
-                  <label for="readThroughput">Read ({{ formattedReadThroughput }} rpm):</label>
-                  <input v-model="readThroughput" type="number" class="form-control" id="readThroughput">
-                </div>
-
-                <div class="form-group">
-                  <label for="clusters">Clusters:</label>
-                  <input v-model="clusters" type="number" class="form-control" readonly="readonly" id="clusters">
-                </div>
-
                 <div class="form-group">
                   <label for="deticatedNodes">Master Nodes:</label>
                   <input v-model="deticatedNodes" type="number" class="form-control" id="deticatedNodes">
@@ -63,6 +43,31 @@
                   <label for="replicas">Replicas:</label>
                   <input v-model="replicas" type="number" class="form-control" id="replicas">
                 </div>
+
+                <div class="form-group">
+                  <label for="gbSize">Size ({{ formattedSize }}):</label>
+                  <input v-model="gbSize" type="number" class="form-control" id="gbSize">
+                </div>
+
+                <div class="form-group">
+                  <label for="documents">Documents ({{ formattedDocuments }}):</label>
+                  <input v-model="documents" type="number" class="form-control" id="documents">
+                </div>
+
+                <div class="form-group">
+                  <label for="writeThroughput">Write ({{formattedWriteThroughput}} rpm):</label>
+                  <input v-model="writeThroughput" type="number" class="form-control" id="writeThroughput">
+                </div>
+
+                <div class="form-group">
+                  <label for="readThroughput">Read ({{ formattedReadThroughput }} rpm):</label>
+                  <input v-model="readThroughput" type="number" class="form-control" id="readThroughput">
+                </div>
+
+                <div class="form-group">
+                  <label for="clusters">Clusters:</label>
+                  <input v-model="clusters" type="number" class="form-control" readonly="readonly" id="clusters">
+                </div>
               </div>
             </div>
             <br>
@@ -80,6 +85,7 @@
                 :documents="safeInt(documents)"
                 :shards="safeInt(shards)"
                 :read-throughput="safeInt(readThroughput)"
+                :gb-size="safeInt(gbSize)"
                 :write-throughput="safeInt(writeThroughput)"
                 :replicas="safeInt(replicas)">
               </cluster>
@@ -90,6 +96,6 @@
       </div>
     </div>
 
-    <script src="./bundle/javascripts/home.js?v=4"></script>
+    <script src="./bundle/javascripts/home.js?v=5"></script>
   </body>
 </html>
