@@ -8,24 +8,24 @@ const app = new Vue({
   el: '#app',
   components: { Cluster },
   data: {
-    writeThroughput: 1000,
-    readThroughput: 1500,
-    documents: 4000000,
+    writeThroughput: 500,
+    readThroughput: 2000,
+    documents: 1000000,
     clusters: 1,
     deticatedNodes: 1,
     nodes: 3,
-    shards: 3,
+    shards: 2,
     replicas: 2,
   },
   computed: {
     formattedDocuments() {
-      return numerify(this.documents, '0.0a');
+      return numerify(this.documents, '0a');
     },
     formattedReadThroughput() {
-      return numerify(this.readThroughput, '0.0a');
+      return numerify(this.readThroughput, '0a');
     },
     formattedWriteThroughput() {
-      return numerify(this.writeThroughput, '0.0a');
+      return numerify(this.writeThroughput, '0a');
     },
   },
   methods: {

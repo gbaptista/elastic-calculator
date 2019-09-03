@@ -30,7 +30,7 @@ export default {
   },
   computed: {
     documentsInThisShards() {
-      return numerify(Math.ceil(this.documents / this.totalOfShards), '0.0a');
+      return numerify(Math.ceil(this.documents / this.totalOfShards), '0a');
     },
     readsForThisShard() {
       return numerify(

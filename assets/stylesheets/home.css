@@ -20,7 +20,7 @@
 }
 
 .clusters .card-shard .card-body, .clusters .card-replica .card-body {
-  padding: 1.0rem 0.40rem;
+  padding: 1.0rem 0.30rem;
 }
 
 .clusters .card-cluster > .card-body, .clusters .card-node > .card-body {
