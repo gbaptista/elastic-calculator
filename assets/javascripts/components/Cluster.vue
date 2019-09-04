@@ -3,6 +3,29 @@
     <div class="card card-cluster">
       <div class="card-header text-white bg-dark">
         {{ name }}
+
+        <br>
+
+        <span
+          v-if="hasExpectedNodes"
+          class="badge badge-light"
+        >
+          shards: {{ shards }}
+        </span>
+
+        <span
+          v-if="hasExpectedNodes"
+          class="badge badge-light"
+        >
+          replicas: {{ shards * replicas }}
+        </span>
+
+        <span
+          v-if="hasExpectedNodes"
+          class="badge badge-light"
+        >
+          {{ clusterSize }}
+        </span>
       </div>
       <div class="card-body">
         <div v-if="!hasExpectedNodes">
@@ -76,7 +99,12 @@
 </template>
 
 <script>
+import numerify from 'numerify';
+import numerifyBytes from 'numerify/lib/plugins/bytes.umd';
 import Node from './Node.vue';
+
+
+numerify.register('bytes', numerifyBytes);
 
 export default {
   components: { Node },
@@ -93,6 +121,15 @@ export default {
     writeThroughput: { type: Number, required: true },
   },
   computed: {
+    clusterSize() {
+      const gbPerShard = this.gbSize / this.shards;
+
+      const clusterGb = gbPerShard * (
+        this.shards + (this.shards * this.replicas)
+      );
+
+      return numerify(clusterGb * 1000 * 1000000, '0.0b');
+    },
     hasExpectedNodes() {
       let expectedNodes = this.deticatedNodes;
 
@@ -136,7 +173,7 @@ export default {
         }
       }
 
-      let maxTries = ((this.shards * this.replicas) + this.shards) * 10;
+      let maxTries = ((this.shards * this.replicas) + this.shards) * 3;
 
       while (maxTries > 0 && (pendingShards > 0 || pendingReplicas > 0)) {
         maxTries -= 1;
