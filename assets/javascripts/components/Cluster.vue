@@ -100,27 +100,18 @@ export default {
         expectedNodes += 1;
       }
 
-      return this.nodes >= expectedNodes;
-    },
-    replicasPerNode() {
-      const nodeReplicas = {};
+      const expectedAllocatedReplicas = this.shards * this.replicas;
 
-      for (let node = 1; node <= this.nodes; node += 1) {
-        nodeReplicas[node] = 0;
+      let currentAllocatedReplicas = 0;
+
+      for (let n = 1; n <= Object.keys(this.shardsAndReplicasPerNode).length; n += 1) {
+        currentAllocatedReplicas += this.shardsAndReplicasPerNode[n].filter(
+          item => item.kind === 'replica',
+        ).length;
       }
 
-      let pendingReplicas = this.shards * this.replicas;
-
-      while (pendingReplicas > 0) {
-        for (let node = 1; node <= (this.nodes - this.deticatedNodes); node += 1) {
-          nodeReplicas[node] += 1;
-          pendingReplicas -= 1;
-
-          if (pendingReplicas === 0) break;
-        }
-      }
-
-      return nodeReplicas;
+      return (this.nodes >= expectedNodes
+        && currentAllocatedReplicas === expectedAllocatedReplicas);
     },
     shardsAndReplicasPerNode() {
       const nodeShardsAndReplicas = {};
@@ -132,14 +123,49 @@ export default {
       let pendingShards = this.shards;
       let pendingReplicas = this.shards * this.replicas;
 
-      while (pendingShards > 0 || pendingReplicas > 0) {
+      const replicasToAttach = [];
+
+      for (let shard = 1; shard <= this.shards; shard += 1) {
+        for (let replica = 1; replica <= this.replicas; replica += 1) {
+          replicasToAttach.push({
+            key: `replica-${replica}-for-shard-${shard}`,
+            name: `replica (shard ${shard})`,
+            kind: 'replica',
+            shard: `shard-${shard}`,
+          });
+        }
+      }
+
+      let maxTries = ((this.shards * this.replicas) + this.shards) * 10;
+
+      while (maxTries > 0 && (pendingShards > 0 || pendingReplicas > 0)) {
+        maxTries -= 1;
+
         for (let node = 1; node <= (this.nodes - this.deticatedNodes); node += 1) {
           if (pendingShards > 0) {
-            nodeShardsAndReplicas[node].push({ kind: 'shard' });
+            nodeShardsAndReplicas[node].push({
+              key: `shard-${this.shards - pendingShards + 1}`,
+              name: `shard ${this.shards - pendingShards + 1}`,
+              kind: 'shard',
+              shard: `shard-${this.shards - pendingShards + 1}`,
+            });
             pendingShards -= 1;
           } else if (pendingReplicas > 0) {
-            nodeShardsAndReplicas[node].push({ kind: 'replica' });
-            pendingReplicas -= 1;
+            for (let r = 0; r < replicasToAttach.length; r += 1) {
+              const replicaToAllocate = replicasToAttach[r];
+
+              if (this.canAllocateReplica(
+                nodeShardsAndReplicas[node], replicaToAllocate,
+              )) {
+                nodeShardsAndReplicas[node].push(replicaToAllocate);
+
+                replicasToAttach.splice(r, 1);
+
+                pendingReplicas -= 1;
+
+                break;
+              }
+            }
           } else {
             break;
           }
@@ -148,30 +174,22 @@ export default {
 
       return nodeShardsAndReplicas;
     },
-    shardsPerNode() {
-      const nodeShards = {};
-
-      for (let node = 1; node <= (this.nodes - this.deticatedNodes); node += 1) {
-        nodeShards[node] = 0;
-      }
-
-      let pendingShards = this.shards;
-
-      while (pendingShards > 0) {
-        for (let node = 1; node <= (this.nodes - this.deticatedNodes); node += 1) {
-          nodeShards[node] += 1;
-          pendingShards -= 1;
-
-          if (pendingShards === 0) break;
+  },
+  methods: {
+    canAllocateReplica(currentShards, newReplica) {
+      for (let s = 0; s < currentShards.length; s += 1) {
+        if (currentShards[s].shard === newReplica.shard) {
+          return false;
         }
       }
 
-      return nodeShards;
-    },
-  },
-  methods: {
-    shardsFor(nodeIndex) {
-      return this.shardsPerNode[nodeIndex];
+      for (let s = 0; s < currentShards.length; s += 1) {
+        if (currentShards[s].key === newReplica.key) {
+          return false;
+        }
+      }
+
+      return true;
     },
     shardsAndReplicasFor(nodeIndex) {
       if (this.shardsAndReplicasPerNode[nodeIndex] === undefined) {
@@ -179,9 +197,6 @@ export default {
       }
 
       return this.shardsAndReplicasPerNode[nodeIndex];
-    },
-    replicasFor(nodeIndex) {
-      return this.replicasPerNode[nodeIndex];
     },
     safeInt(value) {
       const intValue = parseInt(value, 10);

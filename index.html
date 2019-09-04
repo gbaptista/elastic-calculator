@@ -7,7 +7,7 @@
 
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="./assets/vendor/bootstrap/css/bootstrap-4.3.1.min.css">
-    <link rel="stylesheet" href="./assets/stylesheets/home.css?v=5">
+    <link rel="stylesheet" href="./assets/stylesheets/home.css?v=6">
 
     <title>Elasticsearch Calculator</title>
   </head>
@@ -25,13 +25,13 @@
               </div>
               <div class="card-body">
                 <div class="form-group">
-                  <label for="deticatedNodes">Master Nodes:</label>
-                  <input v-model="deticatedNodes" type="number" class="form-control" id="deticatedNodes">
+                  <label for="nodes">Total of Nodes:</label>
+                  <input v-model="nodes" type="number" class="form-control" id="nodes">
                 </div>
 
                 <div class="form-group">
-                  <label for="nodes">Nodes:</label>
-                  <input v-model="nodes" type="number" class="form-control" id="nodes">
+                  <label for="deticatedNodes">Master Nodes:</label>
+                  <input v-model="deticatedNodes" type="number" class="form-control" id="deticatedNodes">
                 </div>
 
                 <div class="form-group">
@@ -96,6 +96,6 @@
       </div>
     </div>
 
-    <script src="./bundle/javascripts/home.js?v=5"></script>
+    <script src="./bundle/javascripts/home.js?v=6"></script>
   </body>
 </html>

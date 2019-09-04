@@ -16,8 +16,8 @@ const app = new Vue({
     gbSize: 10,
     clusters: 1,
     deticatedNodes: 1,
-    nodes: 3,
-    shards: 2,
+    nodes: 4,
+    shards: 3,
     replicas: 2,
   },
   computed: {

@@ -1,6 +1,9 @@
 <template>
   <div class="col-12 col-sm-12 col-md-6 col-lg-4">
     <div class="card card-node">
+      <div class="card-header text-white bg-secondary">
+        {{ name }}
+      </div>
       <div class="card-header">
         <span
           v-if="!master"
@@ -31,8 +34,22 @@
         </span>
 
         <span
+          v-if="!master && shards.length > 0"
+          class="badge badge-dark"
+        >
+          shards: {{ shards.length }}
+        </span>
+
+        <span
+          v-if="!master && replicas.length > 0"
+          class="badge badge-dark"
+        >
+          replicas: {{ replicas.length }}
+        </span>
+
+        <span
           v-if="!master"
-          class="badge badge-light"
+          class="badge badge-dark"
         >
           {{ allBytesForThisNodeLabel }}
         </span>
@@ -66,9 +83,9 @@
         </div>
         <div class="row">
           <shard
-            v-for="shardIndex in shards"
-            :key="'shard' + shardIndex"
-            :name="shardNameFor(shardIndex)"
+            v-for="shard in shards"
+            :key="shard['key']"
+            :name="shard['name']"
             :clusters="clusters"
             :documents="documents"
             :nodes="nodes"
@@ -84,15 +101,15 @@
         </div>
         <div class="row">
           <replica
-            v-for="replicaIndex in replicas"
-            :key="'replica' + replicaIndex"
+            v-for="replica in replicas"
+            :key="replica['key']"
             :documents="documents"
             :total-of-shards="totalOfShards"
             :total-of-replicas="totalOfReplicas"
             :read-throughput="readThroughput"
             :replicas="replicas"
             :gb-size="gbSize"
-            :name="replicaNameFor(replicaIndex)"
+            :name="replica['name']"
           />
         </div>
       </div>
@@ -130,10 +147,10 @@ export default {
   },
   computed: {
     shards() {
-      return this.shardsAndReplicas.filter(item => item.kind === 'shard').length;
+      return this.shardsAndReplicas.filter(item => item.kind === 'shard');
     },
     replicas() {
-      return this.shardsAndReplicas.filter(item => item.kind === 'replica').length;
+      return this.shardsAndReplicas.filter(item => item.kind === 'replica');
     },
     alreadyAllocatedShards() {
       let allocatedShards = 0;
@@ -162,7 +179,7 @@ export default {
         this.readThroughput / ((this.totalOfShards * this.totalOfReplicas) + this.totalOfShards)
       );
 
-      return (this.shards + this.replicas) * readsPerShardOrReplica;
+      return (this.shards.length + this.replicas.length) * readsPerShardOrReplica;
     },
     readsForThisNodeLabel() {
       return numerify(this.readsForThisNode, '0.0a');
@@ -170,17 +187,17 @@ export default {
     allBytesForThisNode() {
       const gbPerShard = this.gbSize / this.totalOfShards;
 
-      return (this.shards + this.replicas) * gbPerShard * 1000 * 1000000;
+      return (this.shards.length + this.replicas.length) * gbPerShard * 1000 * 1000000;
     },
     bytesForThisNode() {
       const gbPerShard = this.gbSize / this.totalOfShards;
 
-      return this.shards * gbPerShard * 1000 * 1000000;
+      return this.shards.length * gbPerShard * 1000 * 1000000;
     },
     writesForThisNode() {
       const writesPerShard = this.writeThroughput / this.totalOfShards;
 
-      return this.shards * writesPerShard;
+      return this.shards.length * writesPerShard;
     },
     allBytesForThisNodeLabel() {
       return numerify(this.allBytesForThisNode, '0.0b');
@@ -194,7 +211,7 @@ export default {
     docsForThisNode() {
       const docsPerShard = this.documents / this.totalOfShards;
 
-      return this.shards * docsPerShard;
+      return this.shards.length * docsPerShard;
     },
     docsForThisNodeLabel() {
       return numerify(this.docsForThisNode, '0.0a');

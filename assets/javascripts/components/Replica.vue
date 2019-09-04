@@ -25,7 +25,7 @@ export default {
   props: {
     name: { type: String, required: true },
     documents: { type: Number, required: true },
-    replicas: { type: Number, required: true },
+    replicas: { type: Array, required: true },
     readThroughput: { type: Number, required: true },
     totalOfShards: { type: Number, required: true },
     gbSize: { type: Number, required: true },
