@@ -12,13 +12,13 @@ const app = new Vue({
   data: {
     writeThroughput: 500,
     readThroughput: 3000,
-    documents: 1000000,
-    gbSize: 10,
+    documents: 10000000,
+    gbSize: 90,
     clusters: 1,
-    deticatedNodes: 1,
+    deticatedNodes: 0,
     nodes: 3,
-    shards: 1,
-    replicas: 1,
+    shards: 3,
+    replicas: 2,
   },
   computed: {
     formattedSize() {
